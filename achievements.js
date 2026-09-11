@@ -435,7 +435,7 @@
             unlockBadge('spy');
             if (document.getElementById('mesh-spy-panel')) { spyPanelCount++; if (spyPanelCount >= 10) unlockBadge('paranoid'); }
         }
-        chrome.storage.sync.get(['speedUp'], (data) => { if (data.speedUp) unlockBadge('turbo'); });
+        try { chrome.storage.sync.get(['speedUp'], (data) => { if (data.speedUp) unlockBadge('turbo'); }); } catch(e) {}
         const activeToggles = document.querySelectorAll('.ant-radio-button-wrapper-checked');
         for (let toggle of activeToggles) { if ((toggle.innerText || '').toLowerCase().includes('отсутстви')) unlockBadge('absence_mode'); }
     }

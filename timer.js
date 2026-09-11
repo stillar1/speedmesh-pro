@@ -191,5 +191,5 @@
         }
     }
     let isTimerInitialized = false;
-    setInterval(() => { if (document.body) { if(!isTimerInitialized) { initDOM(); if(document.getElementById('mesh-timer-wrapper')) isTimerInitialized = true; } updateTimer(); } }, 1000);
+    let timerInterval = setInterval(() => { try { if (document.body) { if(!isTimerInitialized) { initDOM(); if(document.getElementById('mesh-timer-wrapper')) isTimerInitialized = true; } updateTimer(); } } catch(e) { if(e.message && e.message.includes('context')) clearInterval(timerInterval); } }, 1000);
 })();
