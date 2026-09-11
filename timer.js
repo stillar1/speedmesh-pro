@@ -1,0 +1,195 @@
+// ==========================================
+// ⏳ MESH Timer (Расширенные Темы)
+// ==========================================
+(function() {
+    let isEnabled = true;
+    let customSchedule = null;
+    let timerNoteStr = "";
+    let currentTheme = 'default';
+
+    // 🎨 ЦВЕТОВЫЕ ТЕМЫ ДЛЯ ТАЙМЕРА (8 штук!)
+    const themes = {
+        default: {
+            bg: 'rgba(15, 23, 42, 0.9)', border: '1px solid rgba(255, 255, 255, 0.1)', text: '#fff', infoText: '#cbd5e1',
+            breakDot: '#8b5cf6', breakBar: 'rgba(139, 92, 246, 0.3)', lessonDot: '#10b981', lessonBar: 'rgba(16, 185, 129, 0.3)',
+            warnDot: '#ef4444', warnBar: 'rgba(239, 68, 68, 0.3)', specDot: '#f59e0b', specBar: 'rgba(245, 158, 11, 0.3)',
+            idleDot: '#64748b', idleBar: 'rgba(100, 116, 139, 0.3)', noteBg: 'rgba(15, 23, 42, 0.85)', noteBorder: '1px solid rgba(139, 92, 246, 0.5)', noteText: '#e2e8f0'
+        },
+        minimal: {
+            bg: 'rgba(255, 255, 255, 0.95)', border: '1px solid #cbd5e1', text: '#0f172a', infoText: '#475569',
+            breakDot: '#8b5cf6', breakBar: 'rgba(139, 92, 246, 0.2)', lessonDot: '#3b82f6', lessonBar: 'rgba(59, 130, 246, 0.2)',
+            warnDot: '#ef4444', warnBar: 'rgba(239, 68, 68, 0.2)', specDot: '#f59e0b', specBar: 'rgba(245, 158, 11, 0.2)',
+            idleDot: '#94a3b8', idleBar: 'rgba(148, 163, 184, 0.2)', noteBg: 'rgba(255, 255, 255, 0.95)', noteBorder: '1px solid #94a3b8', noteText: '#334155'
+        },
+        hacker: {
+            bg: 'rgba(0, 0, 0, 0.95)', border: '1px solid #22c55e', text: '#22c55e', infoText: '#16a34a',
+            breakDot: '#22c55e', breakBar: 'rgba(34, 197, 94, 0.2)', lessonDot: '#22c55e', lessonBar: 'rgba(34, 197, 94, 0.2)',
+            warnDot: '#22c55e', warnBar: 'rgba(34, 197, 94, 0.2)', specDot: '#22c55e', specBar: 'rgba(34, 197, 94, 0.2)',
+            idleDot: '#064e3b', idleBar: 'rgba(6, 78, 59, 0.2)', noteBg: 'rgba(0, 0, 0, 0.9)', noteBorder: '1px solid #16a34a', noteText: '#22c55e'
+        },
+        cyberpunk: {
+            bg: 'rgba(20, 0, 30, 0.95)', border: '1px solid #f0a', text: '#0ff', infoText: '#ffeb3b',
+            breakDot: '#f0a', breakBar: 'rgba(255, 0, 170, 0.3)', lessonDot: '#0f0', lessonBar: 'rgba(0, 255, 0, 0.2)',
+            warnDot: '#f00', warnBar: 'rgba(255, 0, 0, 0.3)', specDot: '#ffeb3b', specBar: 'rgba(255, 235, 59, 0.3)',
+            idleDot: '#404', idleBar: 'rgba(68, 0, 68, 0.3)', noteBg: 'rgba(20, 0, 30, 0.85)', noteBorder: '1px solid #0ff', noteText: '#ffeb3b'
+        },
+        vaporwave: {
+            bg: 'linear-gradient(135deg, rgba(255, 113, 206, 0.9) 0%, rgba(1, 205, 254, 0.9) 100%)', border: '1px solid #fff', text: '#fff', infoText: '#fff',
+            breakDot: '#fff', breakBar: 'rgba(255, 255, 255, 0.3)', lessonDot: '#fff', lessonBar: 'rgba(255, 255, 255, 0.3)',
+            warnDot: '#fffc00', warnBar: 'rgba(255, 252, 0, 0.4)', specDot: '#05ffa1', specBar: 'rgba(5, 255, 161, 0.3)',
+            idleDot: 'rgba(255,255,255,0.5)', idleBar: 'rgba(255, 255, 255, 0.1)', noteBg: 'rgba(255, 113, 206, 0.8)', noteBorder: '1px solid #fff', noteText: '#fff'
+        },
+        ocean: {
+            bg: 'rgba(3, 15, 38, 0.95)', border: '1px solid #00f0ff', text: '#00f0ff', infoText: '#0ea5e9',
+            breakDot: '#38bdf8', breakBar: 'rgba(56, 189, 248, 0.2)', lessonDot: '#00f0ff', lessonBar: 'rgba(0, 240, 255, 0.2)',
+            warnDot: '#ef4444', warnBar: 'rgba(239, 68, 68, 0.3)', specDot: '#fbbf24', specBar: 'rgba(251, 191, 36, 0.2)',
+            idleDot: '#1e3a8a', idleBar: 'rgba(30, 58, 138, 0.3)', noteBg: 'rgba(3, 15, 38, 0.85)', noteBorder: '1px solid #0ea5e9', noteText: '#38bdf8'
+        },
+        autumn: {
+            bg: 'rgba(67, 36, 17, 0.95)', border: '1px solid #d97706', text: '#fde68a', infoText: '#fdba74',
+            breakDot: '#d97706', breakBar: 'rgba(217, 119, 6, 0.3)', lessonDot: '#f59e0b', lessonBar: 'rgba(245, 158, 11, 0.3)',
+            warnDot: '#dc2626', warnBar: 'rgba(220, 38, 38, 0.4)', specDot: '#fcd34d', specBar: 'rgba(252, 211, 77, 0.3)',
+            idleDot: '#78350f', idleBar: 'rgba(120, 53, 15, 0.3)', noteBg: 'rgba(67, 36, 17, 0.85)', noteBorder: '1px solid #f59e0b', noteText: '#fde68a'
+        },
+        dracula: {
+            bg: 'rgba(40, 42, 54, 0.95)', border: '1px solid #ff79c6', text: '#f8f8f2', infoText: '#bd93f9',
+            breakDot: '#ff79c6', breakBar: 'rgba(255, 121, 198, 0.3)', lessonDot: '#50fa7b', lessonBar: 'rgba(80, 250, 123, 0.3)',
+            warnDot: '#ff5555', warnBar: 'rgba(255, 85, 85, 0.4)', specDot: '#f1fa8c', specBar: 'rgba(241, 250, 140, 0.3)',
+            idleDot: '#6272a4', idleBar: 'rgba(98, 114, 164, 0.3)', noteBg: 'rgba(40, 42, 54, 0.85)', noteBorder: '1px solid #bd93f9', noteText: '#f8f8f2'
+        }
+    };
+
+    chrome.storage.sync.get(['timerMode', 'customBellsText', 'timerNoteText', 'timerTheme'], (data) => {
+        if (data && data.timerMode !== undefined) isEnabled = data.timerMode;
+        if (data && data.customBellsText) customSchedule = parseCustomSchedule(data.customBellsText);
+        if (data && data.timerNoteText) timerNoteStr = data.timerNoteText;
+        if (data && data.timerTheme) currentTheme = data.timerTheme;
+    });
+
+    chrome.runtime.onMessage.addListener((req) => {
+        if (req.action === "updateSettings" && req.settings.timerMode !== undefined) {
+            isEnabled = req.settings.timerMode;
+            const card = document.getElementById('mesh-timer-card');
+            if (card) card.style.display = isEnabled ? 'flex' : 'none';
+        }
+        if (req.action === "updateTimerData") {
+            chrome.storage.sync.get(['customBellsText', 'timerNoteText', 'timerTheme'], (data) => {
+                customSchedule = parseCustomSchedule(data.customBellsText);
+                timerNoteStr = data.timerNoteText || "";
+                currentTheme = data.timerTheme || 'default';
+                updateTimer(); 
+            });
+        }
+    });
+
+    function parseCustomSchedule(text) {
+        if (!text || text.trim() === "") return null;
+        let lines = text.split('\n');
+        let newSchedule = [];
+        lines.forEach(line => {
+            let match = line.match(/(\d{1,2}:\d{2})\s*-\s*(\d{1,2}:\d{2})/);
+            if (match) {
+                let s = match[1].split(':'); let e = match[2].split(':');
+                let startFmt = `${s[0].padStart(2, '0')}:${s[1].padStart(2, '0')}`;
+                let endFmt = `${e[0].padStart(2, '0')}:${e[1].padStart(2, '0')}`;
+                newSchedule.push({ type: 'lesson', start: startFmt, end: endFmt, title: 'Пара' });
+            }
+        });
+        if (newSchedule.length === 0) return null;
+        let fullSchedule = [];
+        for (let i = 0; i < newSchedule.length; i++) {
+            fullSchedule.push(newSchedule[i]);
+            if (i < newSchedule.length - 1) {
+                fullSchedule.push({ type: 'break', start: newSchedule[i].end, end: newSchedule[i+1].start, title: 'Перемена' });
+            }
+        }
+        return fullSchedule;
+    }
+
+    const scheduleData = {
+        mon: [{ type: 'special', start: '08:10', end: '08:30', title: 'Флаг/Разговоры' }, { type: 'break', start: '08:30', end: '09:00', title: 'Перемена' }, { type: 'lesson', start: '09:00', end: '09:45', title: '1 урок' }, { type: 'break', start: '09:45', end: '09:55', title: 'Перемена' }, { type: 'lesson', start: '09:55', end: '10:40', title: '2 урок' }, { type: 'break', start: '10:40', end: '11:00', title: 'Перемена' }, { type: 'lesson', start: '11:00', end: '11:45', title: '3 урок' }, { type: 'break', start: '11:45', end: '12:05', title: 'Перемена' }, { type: 'lesson', start: '12:05', end: '12:50', title: '4 урок' }, { type: 'break', start: '12:50', end: '13:10', title: 'Перемена' }, { type: 'lesson', start: '13:10', end: '13:55', title: '5 урок' }, { type: 'break', start: '13:55', end: '14:15', title: 'Перемена' }, { type: 'lesson', start: '14:15', end: '15:00', title: '6 урок' }, { type: 'break', start: '15:00', end: '15:10', title: 'Перемена' }, { type: 'lesson', start: '15:10', end: '15:55', title: '7 урок' }, { type: 'break', start: '15:55', end: '16:15', title: 'Перемена' }, { type: 'lesson', start: '16:15', end: '17:00', title: '8 урок' }, { type: 'break', start: '17:00', end: '17:10', title: 'Перемена' }, { type: 'lesson', start: '17:10', end: '17:55', title: '9 урок' }, { type: 'break', start: '17:55', end: '18:05', title: 'Перемена' }, { type: 'lesson', start: '18:05', end: '18:50', title: '10 урок' }],
+        tue: [{ type: 'lesson', start: '09:00', end: '09:45', title: '1 урок' }, { type: 'break', start: '09:45', end: '09:55', title: 'Перемена' }, { type: 'lesson', start: '09:55', end: '10:40', title: '2 урок' }, { type: 'break', start: '10:40', end: '11:00', title: 'Перемена' }, { type: 'lesson', start: '11:00', end: '11:45', title: '3 урок' }, { type: 'break', start: '11:45', end: '12:05', title: 'Перемена' }, { type: 'lesson', start: '12:05', end: '12:50', title: '4 урок' }, { type: 'break', start: '12:50', end: '13:10', title: 'Перемена' }, { type: 'lesson', start: '13:10', end: '13:55', title: '5 урок' }, { type: 'break', start: '13:55', end: '14:15', title: 'Перемена' }, { type: 'lesson', start: '14:15', end: '15:00', title: '6 урок' }, { type: 'break', start: '15:00', end: '15:10', title: 'Перемена' }, { type: 'lesson', start: '15:10', end: '15:55', title: '7 урок' }, { type: 'break', start: '15:55', end: '16:15', title: 'Перемена' }, { type: 'lesson', start: '16:15', end: '17:00', title: '8 урок' }, { type: 'break', start: '17:00', end: '17:10', title: 'Перемена' }, { type: 'lesson', start: '17:10', end: '17:55', title: '9 урок' }, { type: 'break', start: '17:55', end: '18:05', title: 'Перемена' }, { type: 'lesson', start: '18:05', end: '18:50', title: '10 урок' }],
+        sat: [{ type: 'lesson', start: '09:00', end: '09:45', title: '1 урок' }, { type: 'break', start: '09:45', end: '09:50', title: 'Перемена' }, { type: 'lesson', start: '09:50', end: '10:35', title: '2 урок' }, { type: 'break', start: '10:35', end: '10:45', title: 'Перемена' }, { type: 'lesson', start: '10:45', end: '11:30', title: '3 урок' }, { type: 'break', start: '11:30', end: '11:35', title: 'Перемена' }, { type: 'lesson', start: '11:35', end: '12:20', title: '4 урок' }, { type: 'break', start: '12:20', end: '12:40', title: 'Перемена' }, { type: 'lesson', start: '12:40', end: '13:25', title: '5 урок' }, { type: 'break', start: '13:25', end: '13:30', title: 'Перемена' }, { type: 'lesson', start: '13:30', end: '14:15', title: '6 урок' }, { type: 'break', start: '14:15', end: '14:25', title: 'Перемена' }, { type: 'lesson', start: '14:25', end: '15:10', title: '7 урок' }, { type: 'break', start: '15:10', end: '15:15', title: 'Перемена' }, { type: 'lesson', start: '15:15', end: '16:00', title: '8 урок' }, { type: 'break', start: '16:00', end: '16:20', title: 'Перемена' }, { type: 'lesson', start: '16:20', end: '17:05', title: '9 урок' }, { type: 'break', start: '17:05', end: '17:10', title: 'Перемена' }, { type: 'lesson', start: '17:10', end: '17:55', title: '10 урок' }]
+    };
+
+    function getMinutes(timeStr) { const [h, m] = timeStr.split(':').map(Number); return h * 60 + m; }
+    function getCurrentScheduleKey() { const day = new Date().getDay(); if (day === 1) return 'mon'; if (day === 6) return 'sat'; if (day === 0) return 'mon'; return 'tue'; }
+    const pad = n => n.toString().padStart(2, '0');
+
+    function initDOM() {
+        if (document.getElementById('mesh-timer-card')) return;
+        const card = document.createElement('div');
+        card.id = 'mesh-timer-card';
+        card.style.cssText = `position: fixed; top: 15px; right: 350px; z-index: 9999999; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; gap: 6px; cursor: move; user-select: none; align-items: flex-end; transition: 0.3s;`;
+        card.innerHTML = `
+            <div id="mesh-timer-inner" style="position: relative; border-radius: 30px; padding: 6px 14px; display: flex; align-items: center; gap: 10px; overflow: hidden; backdrop-filter: blur(10px); box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: all 0.3s;">
+                <div id="mesh-timer-bg" style="position:absolute; top:0; left:0; height:100%; width:0%; z-index:0; transition:width 1s linear, background 0.3s;"></div>
+                <div style="position:relative; z-index:1; display:flex; align-items:center; gap:8px;">
+                    <div id="mesh-timer-dot" style="width:10px; height:10px; border-radius:50%; transition: all 0.3s;"></div>
+                    <div id="mesh-timer-val" style="font-family:monospace; font-size:16px; font-weight:bold; letter-spacing:0.5px; width:55px; transition: color 0.3s;">--:--</div>
+                    <div id="mesh-timer-info" style="font-size:12px; font-weight:600; white-space:nowrap; transition: color 0.3s;">Загрузка...</div>
+                </div>
+            </div>
+            <div id="mesh-timer-note-box" style="display: none; border-radius: 12px; padding: 4px 12px; font-size: 11px; text-align: center; backdrop-filter: blur(10px); box-shadow: 0 4px 15px rgba(0,0,0,0.2); max-width: 250px; word-wrap: break-word; transition: all 0.3s;">
+                <span id="mesh-timer-note-text" style="font-weight: 600; transition: color 0.3s;"></span>
+            </div>
+        `;
+        document.body.appendChild(card);
+        if (!isEnabled) card.style.display = 'none';
+
+        chrome.storage.local.get(['timerLeft', 'timerTop'], (data) => {
+            if (data.timerLeft && data.timerTop) { card.style.right = 'auto'; card.style.left = data.timerLeft; card.style.top = data.timerTop; }
+        });
+
+        // Подключаем универсальный Window Manager!
+        setTimeout(() => { if (window.makeMeshDraggable) window.makeMeshDraggable(card, "⏳"); }, 500);
+    }
+
+    function updateTimer() {
+        if (!isEnabled || !document.getElementById('mesh-timer-card')) return;
+        const th = themes[currentTheme] || themes.default;
+        
+        document.getElementById('mesh-timer-inner').style.background = th.bg; document.getElementById('mesh-timer-inner').style.border = th.border;
+        document.getElementById('mesh-timer-val').style.color = th.text; document.getElementById('mesh-timer-info').style.color = th.infoText;
+        const noteBox = document.getElementById('mesh-timer-note-box');
+        noteBox.style.background = th.noteBg; noteBox.style.border = th.noteBorder; document.getElementById('mesh-timer-note-text').style.color = th.noteText;
+
+        if (timerNoteStr.trim() !== "") { document.getElementById('mesh-timer-note-text').textContent = timerNoteStr; noteBox.style.display = 'block'; } 
+        else { noteBox.style.display = 'none'; }
+
+        const now = new Date(); const currentMins = now.getHours() * 60 + now.getMinutes() + now.getSeconds() / 60;
+        const todayKey = getCurrentScheduleKey(); const isSunday = now.getDay() === 0;
+
+        const elTime = document.getElementById('mesh-timer-val'); const elInfo = document.getElementById('mesh-timer-info');
+        const elBar = document.getElementById('mesh-timer-bg'); const elDot = document.getElementById('mesh-timer-dot');
+
+        if (isSunday) { elTime.textContent = "--:--"; elInfo.textContent = "Выходной"; elBar.style.width = '0%'; elDot.style.background = th.idleDot; elDot.style.boxShadow = 'none'; return; }
+
+        const data = (customSchedule && customSchedule.length > 0) ? customSchedule : scheduleData[todayKey];
+        let activeFound = false;
+
+        for (let i = 0; i < data.length; i++) {
+            const item = data[i]; const startMins = getMinutes(item.start); const endMins = getMinutes(item.end);
+            if (currentMins >= startMins && currentMins < endMins) {
+                activeFound = true;
+                const totalDur = (endMins - startMins) * 60; const elap = (currentMins - startMins) * 60; const rem = totalDur - elap;
+                elTime.textContent = rem >= 3600 ? `${Math.floor(rem/3600)}:${pad(Math.floor((rem%3600)/60))}:${pad(Math.floor(rem%60))}` : `${pad(Math.floor(rem/60))}:${pad(Math.floor(rem%60))}`;
+                elBar.style.width = `${(elap / totalDur) * 100}%`;
+
+                if (item.type === 'break') { elInfo.textContent = `Перемена`; elDot.style.background = th.breakDot; elDot.style.boxShadow = `0 0 8px ${th.breakDot}`; elBar.style.background = th.breakBar; } 
+                else if (item.type === 'special') { elInfo.textContent = item.title; elDot.style.background = th.specDot; elDot.style.boxShadow = `0 0 8px ${th.specDot}`; elBar.style.background = th.specBar; } 
+                else { elInfo.textContent = item.title; elDot.style.background = (rem < 300) ? th.warnDot : th.lessonDot; elDot.style.boxShadow = (rem < 300) ? `0 0 8px ${th.warnDot}` : `0 0 8px ${th.lessonDot}`; elBar.style.background = (rem < 300) ? th.warnBar : th.lessonBar; }
+                break;
+            }
+        }
+        if (!activeFound) {
+            const firstStart = getMinutes(data[0].start);
+            if (currentMins < firstStart) {
+                const diff = firstStart - currentMins; elTime.textContent = diff >= 60 ? `${Math.floor(diff/60)}:${pad(Math.floor(diff%60))}` : `${pad(Math.floor(diff%60))}:00`;
+                elInfo.textContent = "До занятий"; elBar.style.width = '100%'; elDot.style.background = th.lessonDot; elDot.style.boxShadow = `0 0 8px ${th.lessonDot}`;
+            } else { elTime.textContent = "--:--"; elInfo.textContent = "Уроки окончены"; elBar.style.width = '100%'; elDot.style.background = th.idleDot; elDot.style.boxShadow = 'none'; }
+        }
+    }
+    let isTimerInitialized = false;
+    setInterval(() => { if (document.body) { if(!isTimerInitialized) { initDOM(); if(document.getElementById('mesh-timer-wrapper')) isTimerInitialized = true; } updateTimer(); } }, 1000);
+})();

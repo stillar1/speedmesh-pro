@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+ <meta charset="UTF-8">
+ <title>SpeedМЭШ PRO - Руководство</title>
+ <style>
+ body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f172a; color: #f8fafc; line-height: 1.6; margin: 0; padding: 40px 20px; overflow-x: hidden; }
+ .container { max-width: 800px; margin: 0 auto; }
+ h1 { color: #38bdf8; text-align: center; margin-bottom: 10px; font-size: 2.5em; text-transform: uppercase; letter-spacing: 2px; }
+ .intro { text-align: center; color: #94a3b8; font-size: 1.2em; margin-bottom: 50px; }
+ .step { background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 25px; margin-bottom: 30px; position: relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.1); }
+ .step-number { position: absolute; top: -20px; left: 20px; background: #38bdf8; color: #0f172a; font-weight: bold; font-size: 24px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; box-shadow: 0 4px 10px rgba(56, 189, 248, 0.4); }
+ .step h2 { color: #10b981; margin-top: 10px; display: flex; align-items: center; gap: 10px; }
+ .step p { font-size: 1.05em; color: #cbd5e1; }
+ .badge { background: #334155; padding: 4px 8px; border-radius: 6px; font-family: monospace; color: #f472b6; font-weight: bold; }
+ .highlight { color: #38bdf8; font-weight: bold; }
+ .feature-list { list-style-type: none; padding: 0; margin-top: 20px; }
+ .feature-list li { background: rgba(0,0,0,0.2); margin-bottom: 15px; padding: 15px; border-radius: 8px; border-left: 4px solid #38bdf8; }
+ .danger { border-left-color: #ef4444 !important; }
+ .success { border-left-color: #10b981 !important; }
+ .warning { border-left-color: #fbbf24 !important; }
+ .tip { margin-top: 20px; background: rgba(16, 185, 129, 0.1); border: 1px solid #10b981; padding: 15px; border-radius: 8px; color: #a7f3d0; display: flex; gap: 15px; align-items: center; }
+ .tip-icon { font-size: 24px; }
+ .footer { margin-top: 50px; text-align: center; color: #64748b; font-style: italic; }
+ </style>
+</head>
+<body>
+ <div class="container">
+ <h1> SpeedМЭШ PRO</h1>
+ <p class="intro">Современный, бесплатный инструмент для мгновенной работы с электронным журналом. Никакой рутины, только лазерная точность.</p>
+
+ <div class="step">
+ <div class="step-number">1</div>
+ <h2>Быстрое выставление оценок</h2>
+ <p>Забудьте про ручной ввод оценок в каждую клетку и медленные загрузки.</p>
+ <ul class="feature-list">
+ <li class="success"><b>Клик по ячейке:</b> Наведите мышку на пустую ячейку и нажмите левую кнопку. Появится синий крестик <span class="highlight">(+)</span>. Нажмите еще раз, чтобы изменить оценку на балл ниже. Правый клик отменяет выделение.</li>
+ <li><b>Вес оценок (NEW!):</b> В нижней панели (которая появляется при выделении ячеек) теперь можно строго задать вес оценки. Расширение само найдет нужную форму контроля в базе МЭШ и прикрепит её к вашей оценке!</li>
+ <li><b>Массовая отправка:</b> Как только выделили нужные ячейки, выберите "Средний балл" (или конкретную оценку) в нижней панели и нажмите <span class="badge">Отправить в МЭШ</span>. Все оценки проставятся за долю секунды.</li>
+ </ul>
+ </div>
+
+ <div class="step">
+ <div class="step-number">2</div>
+ <h2>Выставление по столбцам (Датам)</h2>
+ <p>Идеально подходит для закрытия практических и контрольных работ у всего класса.</p>
+ <ul class="feature-list">
+ <li class="warning"><b>Активация режима:</b> В нижней панели нажмите <span class="badge"> Столбцы</span>. Даты в шапке таблицы начнут подсвечиваться.</li>
+ <li><b>Выбор дат:</b> Кликните по дате (или нескольким датам). Все пустые ячейки в этом столбце у всех учеников будут автоматически отмечены для выставления оценок!</li>
+ </ul>
+ </div>
+
+ <div class="step">
+ <div class="step-number">3</div>
+ <h2>Умная Отмена (Ctrl+Z)</h2>
+ <p>Случайно поставили не туда? Вам не нужно открывать интерфейс МЭШ.</p>
+ <ul class="feature-list">
+ <li class="danger"><b>Отмена кликом:</b> Пока оценка подсвечена зеленым успешным бейджем, просто нажмите на неё один раз — и она моментально удалится с сервера.</li>
+ <li><b>История отмен:</b> Зажмите <span class="badge">Alt</span> и кликните по любой вашей оценке, чтобы вызвать быстрое удаление.</li>
+ </ul>
+ </div>
+
+ <div class="step">
+ <div class="step-number">4</div>
+ <h2>Дополнительные Модули</h2>
+ <p>Расширение берет на себя не только оценки, но и сам урок.</p>
+ <ul class="feature-list">
+ <li><b>Рандомайзер учеников:</b> Нажмите иконку рулетки в нижнем левом углу. Случайный ученик будет выбран для ответа.</li>
+ <li class="success"><b>Достижения (Ачивки):</b> Зал славы. Вы получаете награды за работу (например, "Хакер", "Сингулярность", "Ночной дозор"). Соберите их все!</li>
+ <li><b>Таймер и Архитектор:</b> Скрывайте лишние рекламные блоки Яндекса (Архитектор в меню) и запускайте таймер урока прямо поверх журнала.</li>
+ <li class="warning"><b>Сканер среды (Режим Разработчика):</b> Доступен в главном меню расширения (кнопка сверху справа браузера). Позволяет сканировать внутренние данные МЭШ (для продвинутых).</li>
+ </ul>
+ </div>
+
+ <div class="footer">
+ SpeedМЭШ — это OpenSource проект. Сделано учителями для учителей. 
+ </div>
+ </div>
+</body>
+</html>

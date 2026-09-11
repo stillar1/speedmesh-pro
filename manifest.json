@@ -1,0 +1,76 @@
+{
+  "manifest_version": 3,
+  "name": "speedМЭШ",
+  "version": "2.8",
+  
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  
+  "permissions": ["storage", "activeTab", "scripting"],
+  
+  "action": { 
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  
+  "content_scripts": [
+    {
+      "matches": [
+        "*://school.mos.ru/*", 
+        "*://*.school.mos.ru/*",
+        "*://dnevnik.mos.ru/*",
+        "*://*.dnevnik.mos.ru/*"
+      ],
+      "js": ["speedup.js"],
+      "run_at": "document_start",
+      "all_frames": true
+    },
+    {
+      "matches": [
+        "*://school.mos.ru/*", 
+        "*://*.school.mos.ru/*",
+        "*://dnevnik.mos.ru/*",
+        "*://*.dnevnik.mos.ru/*"
+      ],
+      "js": [
+        "window_manager.js",
+        "content.js", 
+        "architect.js", 
+        "crosshair.js", 
+        "spy_content.js", 
+        "achievements.js", 
+        "randomizer.js", 
+        "absences.js", 
+        "ktp.js",
+        "ktp_injector.js",
+        "timer.js",
+        "calculator.js",
+        "sticky_avg.js",
+        "feature_scanner.js",
+        "jszip.min.js",
+        "mentor_journals.js"
+      ],
+      "run_at": "document_end",
+      "all_frames": true
+    }
+  ],
+  
+  "web_accessible_resources": [
+    {
+      "resources": ["interceptor.js", "ktp_interceptor.js", "api_spy.js", "guide.html", "gallery.html"],
+      "matches": [
+        "*://school.mos.ru/*", 
+        "*://*.school.mos.ru/*",
+        "*://dnevnik.mos.ru/*",
+        "*://*.dnevnik.mos.ru/*"
+      ]
+    }
+  ]
+}
