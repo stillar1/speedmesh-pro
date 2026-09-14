@@ -3,7 +3,6 @@
 <head>
  <meta charset="UTF-8">
  <title>MESH Core PRO</title>
- <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
  <style>
  :root { --bg-main: #0f172a; --bg-card: #1e293b; --border: #334155; --text-main: #f8fafc; --text-muted: #94a3b8; --input-bg: #0f172a; --header-bg: #1e293b; --card-hover: #233045; --gradient-start: #818cf8; --gradient-end: #6366f1; }
  body[data-theme="light"] { --bg-main: #f1f5f9; --bg-card: #ffffff; --border: #cbd5e1; --text-main: #0f172a; --text-muted: #64748b; --input-bg: #f8fafc; --header-bg: #ffffff; --card-hover: #f8fafc; --gradient-start: #818cf8; --gradient-end: #6366f1; }
@@ -14,7 +13,7 @@
  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
  @keyframes pulseGlow { 0%, 100% { box-shadow: 0 0 6px var(--accent); } 50% { box-shadow: 0 0 14px var(--accent), 0 0 20px color-mix(in srgb, var(--accent) 30%, transparent); } }
 
- body { width: 340px; font-family: 'Inter', sans-serif; background: var(--bg-main); color: var(--text-main); margin: 0; padding: 0; overflow-x: hidden; transition: background 0.3s, color 0.3s; }
+ body { width: 340px; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg-main); color: var(--text-main); margin: 0; padding: 0; overflow-x: hidden; transition: background 0.3s, color 0.3s; }
 
  /* === 1. Header with gradient === */
  .header { background: var(--header-bg); padding: 14px 15px 12px; text-align: center; border-bottom: none; position: sticky; top: 0; z-index: 10; display: flex; flex-direction: column; gap: 8px; }
@@ -57,7 +56,7 @@
  input:checked + .slider { background-color: var(--accent); box-shadow: 0 0 8px var(--accent); animation: pulseGlow 2s ease-in-out infinite; }
  input:checked + .slider:before { transform: translateX(14px); }
  
- .premium-input { width: 100%; background: var(--input-bg); border: 1px solid var(--border); color: var(--text-main); padding: 8px 10px; border-radius: 6px; font-size: 12px; font-family: 'Inter', sans-serif; outline: none; box-sizing: border-box; transition: all 0.2s ease; }
+ .premium-input { width: 100%; background: var(--input-bg); border: 1px solid var(--border); color: var(--text-main); padding: 8px 10px; border-radius: 6px; font-size: 12px; font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; outline: none; box-sizing: border-box; transition: all 0.2s ease; }
  .premium-input:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2); }
  select.premium-input { appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 10px center; background-size: 14px; padding-right: 30px; }
  select.premium-input option { background: var(--bg-card); color: var(--text-main); }
