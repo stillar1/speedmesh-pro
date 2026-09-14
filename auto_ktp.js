@@ -23,9 +23,27 @@
     `;
     document.head.appendChild(style);
 
-    function findKtpIdFromUrl() {
+    function findKtpId() {
         const match = location.href.match(/programs\/(\d+)/);
-        return match ? match[1] : null;
+        if (match) return match[1];
+        
+        try {
+            const dump = JSON.parse(sessionStorage.getItem('MESH_API_DUMP') || '{}');
+            let lastId = null;
+            for (let key in dump) {
+                if (key.includes('/lesson_plans/') && !key.includes('/parent')) {
+                    const urlMatch = dump[key].url.match(/lesson_plans\/(\d+)/);
+                    if (urlMatch) lastId = urlMatch[1];
+                }
+                if (key.includes('[POST]') && key.includes('/lesson_plans') && !key.includes('/parent')) {
+                    const res = dump[key].response;
+                    if (res && res.lesson_plan && res.lesson_plan.id) lastId = res.lesson_plan.id;
+                }
+            }
+            return lastId;
+        } catch (e) {}
+        
+        return null;
     }
 
     function extractRpFromSpy() {
@@ -91,8 +109,8 @@
     }
 
     async function generateKTP() {
-        const ktpId = findKtpIdFromUrl();
-        if (!ktpId) return alert("❌ Сохраните пустой КТП хотя бы 1 раз (чтобы в URL появился номер).");
+        const ktpId = findKtpId();
+        if (!ktpId) return alert("❌ Сохраните черновик КТП хотя бы 1 раз (чтобы в URL появился номер).");
 
         const rpData = extractRpFromSpy();
         if (!rpData || !rpData.themes || !rpData.didactic_units) {
