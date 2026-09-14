@@ -31,13 +31,21 @@
                         const key = `[${method}] ${shortUrl}`;
 
                         if (!apiLog[key]) {
+                            let requestPayload = null;
+                            if (args[1] && args[1].body) {
+                                try { requestPayload = JSON.parse(args[1].body); } catch(e) { requestPayload = args[1].body; }
+                            }
                             // 🛡️ ПРЕДОХРАНИТЕЛЬ: Ограничиваем лог 15 последними запросами
                             const keys = Object.keys(apiLog);
                             if (keys.length > 15) {
                                 delete apiLog[keys[0]]; // Удаляем самый старый запрос
                             }
                             
-                            apiLog[key] = data;
+                            apiLog[key] = {
+                                url: url,
+                                request_body: requestPayload,
+                                response: data
+                            };
                             
                             // 🛡️ ПРЕДОХРАНИТЕЛЬ: Безопасная запись с перехватом переполнения
                             try {
