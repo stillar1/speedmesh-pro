@@ -5,15 +5,15 @@
     // Стили для кнопки и лоадера
     const style = document.createElement('style');
     style.innerHTML = `
-        .speedmesh-ktp-btn {
+        .mesh-ktp-btn {
             background: linear-gradient(135deg, #10b981, #059669);
             color: white; border: none; padding: 10px 15px; border-radius: 8px;
             font-weight: bold; cursor: pointer; display: flex; align-items: center; justify-content: center;
             gap: 8px; font-size: 13px; width: 100%; transition: 0.2s; box-shadow: 0 4px 10px rgba(16,185,129,0.3);
             margin-top: 10px;
         }
-        .speedmesh-ktp-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
-        .speedmesh-ktp-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+        .mesh-ktp-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        .mesh-ktp-btn:disabled { opacity: 0.6; cursor: not-allowed; }
     `;
     document.head.appendChild(style);
 
@@ -159,16 +159,14 @@
     }
 
     function injectButton() {
-        const targetPanel = document.getElementById('speedmesh-ktp-panel');
+        const targetPanel = document.getElementById('ktp-tools-container');
         if (targetPanel && !document.getElementById('btn-auto-ktp')) {
             const btn = document.createElement('button');
             btn.id = 'btn-auto-ktp';
-            btn.className = 'speedmesh-ktp-btn';
+            btn.className = 'mesh-ktp-btn';
             btn.innerHTML = '⚡ Авто-генерация КТП (Пары)';
             btn.onclick = generateKTP;
-            
-            // Вставляем кнопку после заголовка панели
-            targetPanel.insertBefore(btn, targetPanel.childNodes[1]);
+            targetPanel.appendChild(btn);
         }
     }
 

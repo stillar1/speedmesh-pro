@@ -72,7 +72,7 @@
 
         if (ids.length === 0) {
             panel.innerHTML = `
-                <div style="font-size:16px; font-weight:bold; color:#3498db;">🗓️ Ассистент КТП</div>
+                <div style="font-size:16px; font-weight:bold; color:#3498db;">🗓️ Ассистент КТП</div><div id="ktp-tools-container"></div>
                 <div style="font-size:12px; color:#f39c12; margin-top:5px;">⏳ Ожидание данных...</div>
                 <div style="font-size:11px; color:#bdc3c7; line-height:1.4; margin-top:5px; padding:8px; background:rgba(255,255,255,0.05); border-radius:6px;">
                     Разверните пункт 3 <b>"Календарно-тематическое планирование"</b>.
@@ -80,7 +80,7 @@
             `;
         } else {
             panel.innerHTML = `
-                <div style="font-size:16px; font-weight:bold; color:#3498db; display:flex; justify-content:space-between;">
+                <div id="ktp-tools-container"></div><div style="font-size:16px; font-weight:bold; color:#3498db; display:flex; justify-content:space-between;">
                     <span>🗓️ Ассистент КТП</span>
                     <span style="color:#2ecc71;">${ids.length} шт.</span>
                 </div>
