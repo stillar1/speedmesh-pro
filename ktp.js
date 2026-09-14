@@ -17,7 +17,7 @@
         if (window.sessionStorage.getItem('MESH_KTP_HIDDEN') === 'true') return;
 
         chrome.storage.sync.get(null, (data) => {
-            if (data.ktpModule !== false && window.location.href.includes('planning')) {
+            if (data.ktpModule !== false && window.location.href.includes('planning') && !window.location.href.includes('programs/new')) {
                 if (!document.getElementById('mesh-ktp-panel')) drawKtpPanel();
                 updatePanelUI();
             } else {
