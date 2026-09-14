@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const toggles = [
         'autoGrader', 'highlightGrades', 'ktpModule', 'calcAttendance', 'calculatorMode', 'stickyMode', 
-        'speedUp', 'spyMode', 'architectMode', 'randomizerMode', 
+        'speedUp', 'apiSpyMode', 'architectMode', 'randomizerMode', 
         'timerMode', 'ghostMode'
     ];
 
