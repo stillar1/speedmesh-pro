@@ -23,6 +23,27 @@
     `;
     document.head.appendChild(style);
 
+    
+    function extractKtpFromSpy() {
+        try {
+            const dump = JSON.parse(sessionStorage.getItem('MESH_API_DUMP') || '{}');
+            let latestPlan = null;
+            let latestTime = 0; // We can't know time easily, but we can just grab the first valid one
+
+            for (let key in dump) {
+                // Ищем в ответах POST или PUT
+                if (key.includes('/lesson_plans') && !key.includes('/parent')) {
+                    const res = dump[key].response;
+                    if (res && res.lesson_plan && res.lesson_plan.id) {
+                        latestPlan = res.lesson_plan;
+                    }
+                }
+            }
+            return latestPlan;
+        } catch (e) {}
+        return null;
+    }
+
     function findKtpId() {
         const match = location.href.match(/programs\/(\d+)/);
         if (match) return match[1];
@@ -121,10 +142,14 @@
         if (btn) { btn.disabled = true; btn.innerHTML = "⏳ Создаю пары..."; }
 
         try {
-            const planRes = await fetch(`https://school.mos.ru/api/profeducation/plan/teacher/v1/lesson_plans/${ktpId}`, { headers: getMeshHeaders() });
-            if (!planRes.ok) throw new Error("Не удалось скачать текущий КТП");
-            const planData = await planRes.json();
-            const ktp = planData.lesson_plan;
+            let ktp = extractKtpFromSpy();
+            if (!ktp) {
+                // Фолбэк на скачивание
+                const planRes = await fetch(`https://school.mos.ru/api/profeducation/plan/teacher/v1/lesson_plans/${ktpId}`, { headers: getMeshHeaders() });
+                if (!planRes.ok) throw new Error("Не удалось скачать текущий КТП (HTTP " + planRes.status + ")");
+                const planData = await planRes.json();
+                ktp = planData.lesson_plan;
+            }
 
             const newModules = [];
             let moduleOrdinal = 1;
