@@ -37,8 +37,10 @@
                             }
                             // 🛡️ ПРЕДОХРАНИТЕЛЬ: Ограничиваем лог 15 последними запросами
                             const keys = Object.keys(apiLog);
-                            if (keys.length > 15) {
-                                delete apiLog[keys[0]]; // Удаляем самый старый запрос
+                            if (keys.length > 25) {
+                                const keyToRemove = keys.find(k => !k.includes('thematic_frames') && !k.includes('didactic-themes') && !k.includes('lesson_plans'));
+                                if (keyToRemove) delete apiLog[keyToRemove];
+                                else delete apiLog[keys[0]];
                             }
                             
                             apiLog[key] = {
