@@ -128,7 +128,7 @@
     }
 
     function checkDrawPanel() {
-        if (!location.href.includes('planning/programs')) return;
+        if (!location.href.includes('planning/programs')) { const p = document.getElementById('mesh-auto-ktp'); if (p) p.remove(); return; }
         
         if (!document.getElementById('mesh-auto-ktp')) {
             const p = document.createElement('div');
