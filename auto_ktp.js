@@ -31,8 +31,35 @@
     function extractRpFromSpy() {
         try {
             const dump = JSON.parse(sessionStorage.getItem('MESH_API_DUMP') || '{}');
+            let rpData = null;
+            
+            // Пробуем старый формат (programs/new)
             for (let key in dump) {
-                if (key.includes('didactic-themes')) return dump[key].response;
+                if (key.includes('didactic-themes')) {
+                    rpData = dump[key].response;
+                    break;
+                }
+            }
+            
+            if (rpData && rpData.themes) return rpData;
+            
+            // Пробуем новый формат (programs/{id})
+            for (let key in dump) {
+                if (key.includes('thematic_frames')) {
+                    const arr = dump[key].response;
+                    if (Array.isArray(arr)) {
+                        rpData = { themes: [], didactic_units: [] };
+                        arr.forEach(t => {
+                            rpData.themes.push({ id: t.id, title: t.title });
+                            if (t.didactic_units) {
+                                t.didactic_units.forEach(u => {
+                                    rpData.didactic_units.push({ id: u.id, title: u.title, theme_id: t.id });
+                                });
+                            }
+                        });
+                        return rpData;
+                    }
+                }
             }
         } catch (e) {}
         return null;
