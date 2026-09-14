@@ -65,6 +65,31 @@
         return null;
     }
 
+    
+    function getMeshHeaders() {
+        let headers = {
+            "Accept": "application/json, text/plain, */*",
+            "Content-Type": "application/json"
+        };
+        try {
+            const stolen = JSON.parse(window.sessionStorage.getItem('MESH_KTP_HEADERS') || "{}");
+            if (Object.keys(stolen).length > 0) return { ...headers, ...stolen };
+        } catch(e) {}
+
+        let cookies = document.cookie.split('; ').reduce((acc, v) => {
+            let parts = v.split('='); 
+            if(parts[0]) acc[parts[0].trim()] = parts.slice(1).join('='); 
+            return acc;
+        }, {});
+        
+        headers["Auth-Token"] = decodeURIComponent(cookies['aupd_token'] || "");
+        headers["Authorization"] = `Bearer ${decodeURIComponent(cookies['aupd_token'] || "")}`;
+        headers["Profile-Id"] = decodeURIComponent(cookies['profile_id'] || "");
+        headers["x-mes-subsystem"] = "profeducation";
+        
+        return headers;
+    }
+
     async function generateKTP() {
         const ktpId = findKtpIdFromUrl();
         if (!ktpId) return alert("❌ Сохраните пустой КТП хотя бы 1 раз (чтобы в URL появился номер).");
@@ -78,7 +103,7 @@
         if (btn) { btn.disabled = true; btn.innerHTML = "⏳ Создаю пары..."; }
 
         try {
-            const planRes = await fetch(`https://school.mos.ru/api/profeducation/plan/teacher/v1/lesson_plans/${ktpId}`);
+            const planRes = await fetch(`https://school.mos.ru/api/profeducation/plan/teacher/v1/lesson_plans/${ktpId}`, { headers: getMeshHeaders() });
             if (!planRes.ok) throw new Error("Не удалось скачать текущий КТП");
             const planData = await planRes.json();
             const ktp = planData.lesson_plan;
@@ -138,7 +163,7 @@
             };
 
             const saveRes = await fetch(`https://school.mos.ru/api/profeducation/plan/teacher/v1/lesson_plans/${ktp.id}`, {
-                method: 'PUT', headers: { 'Content-Type': 'application/json' },
+                method: 'PUT', headers: getMeshHeaders(),
                 body: JSON.stringify(payload)
             });
 
