@@ -386,7 +386,7 @@ function runCoreLogic() {
     if (markCells.length === 0) {
         // Фоллбек на старый селектор, если нет маркселлов
         const rowsOld = document.querySelectorAll(SELECTORS.tableRows);
-        if (rowsOld.length === 0) return;
+        if (rowsOld.length === 0) { removePhantomsAndPanel(); return; }
     }
 
     // Собираем уникальные строки по родителям ячеек
@@ -480,7 +480,7 @@ function drawRobotPanel(count) {
 
     const reloadBtnHtml = `
         <div style="width:1px; height:30px; background:rgba(255,255,255,0.1); margin: 0 5px;"></div>
-        <button class="mesh-panel-reload-btn" title="Обновить страницу" style="background:#27ae60; color:white; border:none; border-radius:8px; padding:10px 15px; cursor:pointer; font-weight:bold; transition:0.2s; box-shadow:0 4px 15px rgba(39, 174, 96, 0.4);" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">ОбновитьОбновить</button>
+        <button class="mesh-panel-reload-btn" title="Обновить страницу" style="background:#27ae60; color:white; border:none; border-radius:8px; padding:10px 15px; cursor:pointer; font-weight:bold; transition:0.2s; box-shadow:0 4px 15px rgba(39, 174, 96, 0.4);" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Обновить</button>
     `;
 
     if (isColumnPickerActive) {
@@ -579,7 +579,7 @@ async function startSmartMatrixAPI(isAutoResume = false) {
                 <span>Отправка... <b id="mesh-robot-count" style="color:#2ecc71;">0 / ${cells.length}</b></span>
                 <button id="mesh-robot-btn-stop" style="background:#e74c3c; color:white; border:none; border-radius:8px; padding:6px 15px; cursor:pointer; font-weight:bold; transition:0.2s;">Остановить</button>
                 <div style="width:1px; height:30px; background:rgba(255,255,255,0.1); margin: 0 5px;"></div>
-                <button class="mesh-panel-reload-btn" title="Обновить страницу" style="background:#27ae60; color:white; border:none; border-radius:8px; padding:6px 15px; cursor:pointer; font-weight:bold; transition:0.2s;">ОбновитьОбновить</button>
+                <button class="mesh-panel-reload-btn" title="Обновить страницу" style="background:#27ae60; color:white; border:none; border-radius:8px; padding:6px 15px; cursor:pointer; font-weight:bold; transition:0.2s;">Обновить</button>
             </div>`;
         document.getElementById('mesh-robot-btn-stop').addEventListener('click', function() {
             meshAbortProcess = true; this.innerText = "🛑 Остановка..."; this.style.background = "#c0392b"; this.style.pointerEvents = "none";
