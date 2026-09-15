@@ -52,7 +52,16 @@ document.addEventListener('DOMContentLoaded', () => {
                         setTimeout(() => alert("Для применения 'Режима невидимки' необходимо обновить страницу журнала (F5)."), 300);
                     }
                 });
-                notifyContentScript({ action: 'updateSettings', settings: { [key]: isChecked } });
+                
+                if (key === 'autoGrader') {
+                    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+                        if (tabs[0] && tabs[0].url.includes('mos.ru')) {
+                            chrome.tabs.reload(tabs[0].id);
+                        }
+                    });
+                } else {
+                    notifyContentScript({ action: 'updateSettings', settings: { [key]: isChecked } });
+                }
             });
         }
     });
