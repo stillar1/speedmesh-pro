@@ -231,7 +231,7 @@
             p.className = 'mesh-auto-ktp-panel';
             p.innerHTML = `
                 <div class="mesh-auto-ktp-title">⚡ Авто-генератор КТП</div>
-                <button id="btn-auto-ktp-run" class="mesh-auto-ktp-btn">Собрать пары из РП</button>
+                <button id="btn-auto-ktp-run" class="mesh-auto-ktp-btn" disabled style="background: #475569; cursor: not-allowed;">В разработке 🛠️</button>
             `;
             document.body.appendChild(p);
             document.getElementById('btn-auto-ktp-run').onclick = generateKTP;
