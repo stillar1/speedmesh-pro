@@ -781,7 +781,7 @@ setInterval(() => {
     for (let el of headers) {
         let text = el.innerText.trim();
         // Ищем паттерны групп СПО (например, ИСП-211) или школ (10 А)
-        if (text.length > 2 && text.length < 50 && (/[А-Я]{2,5}-\d{2,3}/.test(text) || /\d{1,2}\s*[А-Я]/.test(text) || text.includes('группа'))) {
+        if (text.length > 2 && text.length < 50 && (/(?:[А-ЯЁA-Z]{2,5}-?\d{2,4}|[А-ЯЁA-Z]{2,5}\s\d{2,4}|\d{1,2}\s*[\"']?[А-ЯЁA-Z][\"']?)/i.test(text) || text.toLowerCase().includes('группа'))) {
             document.title = "Журнал: " + text.split('\n')[0]; // Берем только первую строку
             break;
         }
