@@ -768,3 +768,22 @@ document.addEventListener('mousedown', (e) => {
 document.addEventListener('contextmenu', (e) => {
     if (e.target.closest('.mesh-phantom-grade')) e.preventDefault();
 }, { capture: true });
+
+
+// --- АВТО-ПЕРЕИМЕНОВАНИЕ ВКЛАДКИ ---
+setInterval(() => {
+    if (!window.location.href.includes('/journal')) return;
+    if (document.title.includes('Журнал:')) return; // Уже переименовали
+
+    // Ищем название группы/предмета. Обычно оно лежит в заголовке h1/h2 или хлебных крошках
+    const headers = document.querySelectorAll('h1, h2, .ant-breadcrumb-link, [class*="group"], [class*="title"]');
+    
+    for (let el of headers) {
+        let text = el.innerText.trim();
+        // Ищем паттерны групп СПО (например, ИСП-211) или школ (10 А)
+        if (text.length > 2 && text.length < 50 && (/[А-Я]{2,5}-\d{2,3}/.test(text) || /\d{1,2}\s*[А-Я]/.test(text) || text.includes('группа'))) {
+            document.title = "Журнал: " + text.split('\n')[0]; // Берем только первую строку
+            break;
+        }
+    }
+}, 3000);
