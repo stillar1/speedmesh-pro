@@ -776,10 +776,10 @@ setInterval(() => {
     if (document.title.includes('Журнал:')) return; 
 
     const fullText = document.body.innerText || "";
-    // Паттерн: ИСП-211, ИСП2351, ИСП2351-25, 10 А
-    const match = fullText.match(/([А-ЯЁA-Z]{2,5}-?\d{2,4}(?:-\d{1,2})?|\b\d{1,2}\s*["']?[А-ЯЁA-Z]["']?\b)/);
+    // Захватываем основную часть в match[1], а хвост вроде "-25" игнорируем
+    const match = fullText.match(/([А-ЯЁA-Z]{2,5}-?\d{2,4})(?:-\d{1,2})?|\b(\d{1,2}\s*["']?[А-ЯЁA-Z]["']?)\b/);
     
     if (match) {
-        document.title = "Журнал: " + match[0];
+        document.title = "Журнал: " + (match[1] || match[2]);
     }
 }, 3000);
