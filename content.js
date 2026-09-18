@@ -773,13 +773,15 @@ document.addEventListener('contextmenu', (e) => {
 // --- АВТО-ПЕРЕИМЕНОВАНИЕ ВКЛАДКИ ---
 setInterval(() => {
     if (!window.location.href.includes('/journal')) return;
-    if (document.title.includes('Журнал:')) return; 
 
     const fullText = document.body.innerText || "";
     // Захватываем основную часть в match[1], а хвост вроде "-25" игнорируем
     const match = fullText.match(/([А-ЯЁA-Z]{2,5}-?\d{2,4})(?:-\d{1,2})?|\b(\d{1,2}\s*["']?[А-ЯЁA-Z]["']?)\b/);
     
     if (match) {
-        document.title = "Журнал: " + (match[1] || match[2]);
+        const newTitle = match[1] || match[2];
+        if (document.title !== newTitle) {
+            document.title = newTitle;
+        }
     }
 }, 3000);
