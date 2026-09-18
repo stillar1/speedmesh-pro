@@ -775,15 +775,11 @@ setInterval(() => {
     if (!window.location.href.includes('/journal')) return;
     if (document.title.includes('Журнал:')) return; 
 
-    const allText = document.body.innerText.split('\n');
-    for (let line of allText) {
-        let text = line.trim();
-        if (text.length > 2 && text.length < 50 && !text.toLowerCase().includes('урок')) {
-            let match = text.match(/([А-ЯЁA-Z]{2,5}-?\d{2,4}|\b\d{1,2}\s*["']?[А-ЯЁA-Z]["']?\b)/);
-            if (match) {
-                document.title = "Журнал: " + match[0];
-                break;
-            }
-        }
+    const fullText = document.body.innerText || "";
+    // Паттерн: ИСП-211, ИСП2351, ИСП2351-25, 10 А
+    const match = fullText.match(/([А-ЯЁA-Z]{2,5}-?\d{2,4}(?:-\d{1,2})?|\b\d{1,2}\s*["']?[А-ЯЁA-Z]["']?\b)/);
+    
+    if (match) {
+        document.title = "Журнал: " + match[0];
     }
 }, 3000);
