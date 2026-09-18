@@ -773,16 +773,15 @@ document.addEventListener('contextmenu', (e) => {
 // --- АВТО-ПЕРЕИМЕНОВАНИЕ ВКЛАДКИ ---
 setInterval(() => {
     if (!window.location.href.includes('/journal')) return;
-    if (document.title.includes('Журнал:')) return; // Уже переименовали
+    if (document.title.includes('Журнал:')) return; 
 
-    // Ищем название группы/предмета. Обычно оно лежит в заголовке h1/h2 или хлебных крошках
-    const headers = document.querySelectorAll('h1, h2, .ant-breadcrumb-link, [class*="group"], [class*="title"]');
-    
-    for (let el of headers) {
-        let text = el.innerText.trim();
-        // Ищем паттерны групп СПО (например, ИСП-211) или школ (10 А)
-        if (text.length > 2 && text.length < 50 && (/(?:[А-ЯЁA-Z]{2,5}-?\d{2,4}|[А-ЯЁA-Z]{2,5}\s\d{2,4}|\d{1,2}\s*[\"']?[А-ЯЁA-Z][\"']?)/i.test(text) || text.toLowerCase().includes('группа'))) {
-            document.title = "Журнал: " + text.split('\n')[0]; // Берем только первую строку
+    // Брутфорс поиск: ищем везде в тексте страницы!
+    const allText = document.body.innerText.split('\n');
+    for (let line of allText) {
+        let text = line.trim();
+        if (text.length > 2 && text.length < 30 && (/(?:[А-ЯЁA-Z]{2,5}-?\d{2,4}|[А-ЯЁA-Z]{2,5}\s\d{2,4}|\d{1,2}\s*["']?[А-ЯЁA-Z]["']?)/i.test(text) || text.toLowerCase().includes('группа'))) {
+            // Если нашли - меняем и выходим!
+            document.title = "Журнал: " + text;
             break;
         }
     }
