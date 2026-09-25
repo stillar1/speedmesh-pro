@@ -53,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
                 
-                if (key === 'autoGrader') {
+                if (key === 'autoGrader' || key === 'architectMode') {
                     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
                         if (tabs[0] && tabs[0].url.includes('mos.ru')) {
                             chrome.tabs.reload(tabs[0].id);
