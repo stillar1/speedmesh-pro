@@ -13,18 +13,19 @@
     let isKtpRunning = false;
 
     document.addEventListener('SpeedmeshDOMReady', () => {
-        if (!document.body || isKtpRunning) return; 
+        if (!document.body) return; 
         if (window.sessionStorage.getItem('MESH_KTP_HIDDEN') === 'true') return;
 
-try {
+        try {
             chrome.storage.sync.get(null, (data) => {
                 if (chrome.runtime.lastError) return;
                 if (data.ktpModule !== false && window.location.href.includes('planning') && !window.location.href.includes('programs/new')) {
                     if (!document.getElementById('mesh-ktp-panel')) drawKtpPanel();
-                    updatePanelUI();
+                    if (!isKtpRunning) updatePanelUI();
                 } else {
                     const p = document.getElementById('mesh-ktp-panel');
                     if (p) p.remove();
+                    isKtpRunning = false;
                 }
             });
         } catch (e) {
