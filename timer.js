@@ -132,11 +132,24 @@
                 </div>
             </div>
             
-            <div id="mesh-timer-settings-panel" style="display:none; position:absolute; top:110%; right:0; background:rgba(20,25,30,0.9); backdrop-filter:blur(10px); padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,0.1); width:180px; flex-direction:column; gap:8px; z-index:10000000; box-shadow: 0 5px 20px rgba(0,0,0,0.5);">
-                <div style="color:white; font-size:11px; font-weight:bold; margin-bottom:5px;">Настройки Виджета</div>
+            <div id="mesh-timer-settings-panel" style="display:none; position:absolute; top:110%; right:0; background:rgba(20,25,30,0.9); backdrop-filter:blur(10px); padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,0.1); width:200px; flex-direction:column; gap:8px; z-index:10000000; box-shadow: 0 5px 20px rgba(0,0,0,0.5);">
+                <div style="color:white; font-size:11px; font-weight:bold; margin-bottom:2px; display:flex; justify-content:space-between;">
+                    <span>Настройки</span>
+                    <span id="mesh-timer-reset-colors" style="cursor:pointer; color:#e74c3c; font-size:9px;">Сброс цветов</span>
+                </div>
+                <label style="color:#aaa; font-size:10px; display:flex; justify-content:space-between; align-items:center;">Стиль: 
+                    <select id="mesh-timer-theme-select" style="background:#0f172a; color:white; border:1px solid #334; border-radius:4px; font-size:10px; padding:2px; cursor:pointer;">
+                        <option value="default">Неоновый космос</option>
+                        <option value="minimal">Светлый минимализм</option>
+                        <option value="hacker">Матрица</option>
+                    </select>
+                </label>
+                <label style="color:#aaa; font-size:10px; display:flex; justify-content:space-between; align-items:center;">Свой фон: <input type="color" id="mesh-timer-color-bg" style="width:24px; height:24px; border:none; background:none; cursor:pointer; padding:0;"></label>
+                <label style="color:#aaa; font-size:10px; display:flex; justify-content:space-between; align-items:center;">Свой текст: <input type="color" id="mesh-timer-color-text" style="width:24px; height:24px; border:none; background:none; cursor:pointer; padding:0;"></label>
+                <div style="height:1px; background:rgba(255,255,255,0.1); margin:4px 0;"></div>
                 <label style="color:#aaa; font-size:10px; display:flex; justify-content:space-between;">Размер: <input type="range" id="mesh-timer-scale" min="0.5" max="2.0" step="0.1" value="1.0" style="width:80px;"></label>
-                <label style="color:#aaa; font-size:10px; display:flex; justify-content:space-between;">Округление: <input type="range" id="mesh-timer-radius" min="0" max="40" step="2" value="30" style="width:80px;"></label>
-                <label style="color:#aaa; font-size:10px; display:flex; justify-content:space-between;">Стекло (Размытие): <input type="range" id="mesh-timer-glass" min="0" max="20" step="1" value="10" style="width:80px;"></label>
+                <label style="color:#aaa; font-size:10px; display:flex; justify-content:space-between;">Скругление: <input type="range" id="mesh-timer-radius" min="0" max="40" step="2" value="30" style="width:80px;"></label>
+                <label style="color:#aaa; font-size:10px; display:flex; justify-content:space-between;">Стекло: <input type="range" id="mesh-timer-glass" min="0" max="20" step="1" value="10" style="width:80px;"></label>
             </div>
 
             <div id="mesh-timer-note-box" style="display: none; border-radius: 12px; padding: 4px 12px; font-size: 11px; text-align: center; backdrop-filter: blur(10px); box-shadow: 0 4px 15px rgba(0,0,0,0.2); max-width: 250px; word-wrap: break-word; transition: all 0.3s; margin-top:6px;">
@@ -175,6 +188,29 @@
                 note.style.borderRadius = `${Math.max(4, e.target.value-10)}px`;
                 chrome.storage.local.set({timerRadius: e.target.value});
             };
+            
+            chrome.storage.local.get(['timerCustomTheme', 'timerCustomBg', 'timerCustomText'], (d) => {
+                if (d.timerCustomTheme) { document.getElementById('mesh-timer-theme-select').value = d.timerCustomTheme; }
+                if (d.timerCustomBg) { document.getElementById('mesh-timer-color-bg').value = d.timerCustomBg; }
+                if (d.timerCustomText) { document.getElementById('mesh-timer-color-text').value = d.timerCustomText; }
+            });
+
+            document.getElementById('mesh-timer-theme-select').onchange = (e) => {
+                chrome.storage.local.set({timerCustomTheme: e.target.value});
+            };
+            document.getElementById('mesh-timer-color-bg').oninput = (e) => {
+                chrome.storage.local.set({timerCustomBg: e.target.value});
+            };
+            document.getElementById('mesh-timer-color-text').oninput = (e) => {
+                chrome.storage.local.set({timerCustomText: e.target.value});
+            };
+            document.getElementById('mesh-timer-reset-colors').onclick = () => {
+                chrome.storage.local.remove(['timerCustomBg', 'timerCustomText'], () => {
+                    document.getElementById('mesh-timer-color-bg').value = '#000000';
+                    document.getElementById('mesh-timer-color-text').value = '#000000';
+                });
+            };
+
             document.getElementById('mesh-timer-glass').oninput = (e) => {
                 inner.style.backdropFilter = `blur(${e.target.value}px)`; inner.style.webkitBackdropFilter = `blur(${e.target.value}px)`;
                 chrome.storage.local.set({timerGlass: e.target.value});
@@ -223,10 +259,22 @@ chrome.storage.local.get(['timerLeft', 'timerTop'], (data) => {
 
     function updateTimer() {
         if (!isEnabled || !document.getElementById('mesh-timer-card')) return;
-        const th = themes[currentTheme] || themes.default;
         
-        document.getElementById('mesh-timer-inner').style.background = th.bg; document.getElementById('mesh-timer-inner').style.border = th.border;
-        document.getElementById('mesh-timer-val').style.color = th.text; document.getElementById('mesh-timer-info').style.color = th.infoText;
+
+        const activeThemeStr = customPrefs.timerCustomTheme || currentTheme || 'default';
+        const th = themes[activeThemeStr] || themes.default;
+        
+        let applyBg = th.bg;
+        if (customPrefs.timerCustomBg) { applyBg = customPrefs.timerCustomBg + '80'; }
+        let applyText = customPrefs.timerCustomText || th.text;
+
+        document.getElementById('mesh-timer-inner').style.background = applyBg;
+        document.getElementById('mesh-timer-inner').style.border = th.border;
+        document.getElementById('mesh-timer-val').style.color = applyText;
+        document.getElementById('mesh-timer-info').style.color = customPrefs.timerCustomText || th.infoText;
+        document.getElementById('mesh-timer-settings-btn').style.color = applyText;
+
+
         const noteBox = document.getElementById('mesh-timer-note-box');
         noteBox.style.background = th.noteBg; noteBox.style.border = th.noteBorder; document.getElementById('mesh-timer-note-text').style.color = th.noteText;
 
