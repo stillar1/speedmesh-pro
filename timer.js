@@ -16,10 +16,10 @@
             idleDot: '#64748b', idleBar: 'rgba(100, 116, 139, 0.3)', noteBg: 'rgba(15, 23, 42, 0.85)', noteBorder: '1px solid rgba(139, 92, 246, 0.5)', noteText: '#e2e8f0'
         },
         minimal: {
-            bg: 'rgba(255, 255, 255, 0.95)', border: '1px solid #cbd5e1', text: '#0f172a', infoText: '#475569',
+            bg: 'rgba(255, 255, 255, 0.4)', border: '1px solid #cbd5e1', text: '#0f172a', infoText: '#475569',
             breakDot: '#8b5cf6', breakBar: 'rgba(139, 92, 246, 0.2)', lessonDot: '#3b82f6', lessonBar: 'rgba(59, 130, 246, 0.2)',
             warnDot: '#ef4444', warnBar: 'rgba(239, 68, 68, 0.2)', specDot: '#f59e0b', specBar: 'rgba(245, 158, 11, 0.2)',
-            idleDot: '#94a3b8', idleBar: 'rgba(148, 163, 184, 0.2)', noteBg: 'rgba(255, 255, 255, 0.95)', noteBorder: '1px solid #94a3b8', noteText: '#334155'
+            idleDot: '#94a3b8', idleBar: 'rgba(148, 163, 184, 0.2)', noteBg: 'rgba(255, 255, 255, 0.4)', noteBorder: '1px solid #94a3b8', noteText: '#334155'
         },
         hacker: {
             bg: 'rgba(0, 0, 0, 0.95)', border: '1px solid #22c55e', text: '#22c55e', infoText: '#16a34a',
@@ -163,7 +163,7 @@
             chrome.storage.local.get(['timerScale', 'timerRadius', 'timerGlass'], (d) => {
                 if (d.timerScale) { inner.style.transform = `scale(${d.timerScale})`; document.getElementById('mesh-timer-scale').value = d.timerScale; }
                 if (d.timerRadius) { inner.style.borderRadius = `${d.timerRadius}px`; note.style.borderRadius = `${Math.max(4, d.timerRadius-10)}px`; document.getElementById('mesh-timer-radius').value = d.timerRadius; }
-                if (d.timerGlass) { inner.style.backdropFilter = `blur(${d.timerGlass}px)`; document.getElementById('mesh-timer-glass').value = d.timerGlass; }
+                if (d.timerGlass) { inner.style.backdropFilter = `blur(${d.timerGlass}px)`; inner.style.webkitBackdropFilter = `blur(${d.timerGlass}px)`; document.getElementById('mesh-timer-glass').value = d.timerGlass; }
             });
             
             document.getElementById('mesh-timer-scale').oninput = (e) => {
@@ -176,7 +176,7 @@
                 chrome.storage.local.set({timerRadius: e.target.value});
             };
             document.getElementById('mesh-timer-glass').oninput = (e) => {
-                inner.style.backdropFilter = `blur(${e.target.value}px)`;
+                inner.style.backdropFilter = `blur(${e.target.value}px)`; inner.style.webkitBackdropFilter = `blur(${e.target.value}px)`;
                 chrome.storage.local.set({timerGlass: e.target.value});
             };
         }, 100);
@@ -184,12 +184,41 @@
         document.body.appendChild(card);
         if (!isEnabled) card.style.display = 'none';
 
-        chrome.storage.local.get(['timerLeft', 'timerTop'], (data) => {
+        
+        // Кастомная логика перетаскивания (без лишних кнопок)
+        let isDragging = false;
+        let startX, startY, initialX, initialY;
+        
+        card.onmousedown = (e) => {
+            if (e.target.tagName === 'INPUT' || e.target.id === 'mesh-timer-settings-btn') return;
+            isDragging = true;
+            startX = e.clientX; startY = e.clientY;
+            const rect = card.getBoundingClientRect();
+            initialX = rect.left; initialY = rect.top;
+            card.style.transition = 'none'; // Убираем плавность при перетаскивании
+        };
+        
+        document.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            card.style.left = (initialX + dx) + 'px';
+            card.style.top = (initialY + dy) + 'px';
+            card.style.right = 'auto'; // Сбрасываем привязку к правому краю
+        });
+        
+        document.addEventListener('mouseup', () => {
+            if (isDragging) {
+                isDragging = false;
+                card.style.transition = '0.3s';
+                chrome.storage.local.set({ timerLeft: card.style.left, timerTop: card.style.top });
+            }
+        });
+chrome.storage.local.get(['timerLeft', 'timerTop'], (data) => {
             if (data.timerLeft && data.timerTop) { card.style.right = 'auto'; card.style.left = data.timerLeft; card.style.top = data.timerTop; }
         });
 
-        // Подключаем универсальный Window Manager!
-        setTimeout(() => { if (window.makeMeshDraggable) window.makeMeshDraggable(card, "⏳"); }, 500);
+        
     }
 
     function updateTimer() {
