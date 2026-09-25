@@ -122,18 +122,65 @@
         card.id = 'mesh-timer-card';
         card.style.cssText = `position: fixed; top: 15px; right: 350px; z-index: 9999999; font-family: 'Segoe UI', sans-serif; display: flex; flex-direction: column; gap: 6px; cursor: move; user-select: none; align-items: flex-end; transition: 0.3s;`;
         card.innerHTML = `
-            <div id="mesh-timer-inner" style="position: relative; border-radius: 30px; padding: 6px 14px; display: flex; align-items: center; gap: 10px; overflow: hidden; backdrop-filter: blur(10px); box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: all 0.3s;">
+            <div id="mesh-timer-inner" style="position: relative; border-radius: 30px; padding: 6px 14px; display: flex; align-items: center; gap: 10px; overflow: hidden; backdrop-filter: blur(10px); box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: all 0.3s; transform-origin: top right;">
                 <div id="mesh-timer-bg" style="position:absolute; top:0; left:0; height:100%; width:0%; z-index:0; transition:width 1s linear, background 0.3s;"></div>
                 <div style="position:relative; z-index:1; display:flex; align-items:center; gap:8px;">
                     <div id="mesh-timer-dot" style="width:10px; height:10px; border-radius:50%; transition: all 0.3s;"></div>
                     <div id="mesh-timer-val" style="font-family:monospace; font-size:16px; font-weight:bold; letter-spacing:0.5px; width:55px; transition: color 0.3s;">--:--</div>
                     <div id="mesh-timer-info" style="font-size:12px; font-weight:600; white-space:nowrap; transition: color 0.3s;">Загрузка...</div>
+                    <div id="mesh-timer-settings-btn" style="cursor:pointer; font-size:14px; margin-left:5px; opacity:0.3; transition:0.2s;" title="Настройки">⚙️</div>
                 </div>
             </div>
-            <div id="mesh-timer-note-box" style="display: none; border-radius: 12px; padding: 4px 12px; font-size: 11px; text-align: center; backdrop-filter: blur(10px); box-shadow: 0 4px 15px rgba(0,0,0,0.2); max-width: 250px; word-wrap: break-word; transition: all 0.3s;">
+            
+            <div id="mesh-timer-settings-panel" style="display:none; position:absolute; top:110%; right:0; background:rgba(20,25,30,0.9); backdrop-filter:blur(10px); padding:10px; border-radius:12px; border:1px solid rgba(255,255,255,0.1); width:180px; flex-direction:column; gap:8px; z-index:10000000; box-shadow: 0 5px 20px rgba(0,0,0,0.5);">
+                <div style="color:white; font-size:11px; font-weight:bold; margin-bottom:5px;">Настройки Виджета</div>
+                <label style="color:#aaa; font-size:10px; display:flex; justify-content:space-between;">Размер: <input type="range" id="mesh-timer-scale" min="0.5" max="2.0" step="0.1" value="1.0" style="width:80px;"></label>
+                <label style="color:#aaa; font-size:10px; display:flex; justify-content:space-between;">Округление: <input type="range" id="mesh-timer-radius" min="0" max="40" step="2" value="30" style="width:80px;"></label>
+                <label style="color:#aaa; font-size:10px; display:flex; justify-content:space-between;">Стекло (Размытие): <input type="range" id="mesh-timer-glass" min="0" max="20" step="1" value="10" style="width:80px;"></label>
+            </div>
+
+            <div id="mesh-timer-note-box" style="display: none; border-radius: 12px; padding: 4px 12px; font-size: 11px; text-align: center; backdrop-filter: blur(10px); box-shadow: 0 4px 15px rgba(0,0,0,0.2); max-width: 250px; word-wrap: break-word; transition: all 0.3s; margin-top:6px;">
                 <span id="mesh-timer-note-text" style="font-weight: 600; transition: color 0.3s;"></span>
             </div>
         `;
+        
+        // Listeners for custom properties
+        setTimeout(() => {
+            const btn = document.getElementById('mesh-timer-settings-btn');
+            const panel = document.getElementById('mesh-timer-settings-panel');
+            const inner = document.getElementById('mesh-timer-inner');
+            const note = document.getElementById('mesh-timer-note-box');
+            
+            if (btn && panel) {
+                btn.onmouseover = () => btn.style.opacity = '1';
+                btn.onmouseout = () => btn.style.opacity = '0.3';
+                btn.onclick = (e) => {
+                    e.stopPropagation();
+                    panel.style.display = panel.style.display === 'none' ? 'flex' : 'none';
+                };
+            }
+            
+            chrome.storage.local.get(['timerScale', 'timerRadius', 'timerGlass'], (d) => {
+                if (d.timerScale) { inner.style.transform = `scale(${d.timerScale})`; document.getElementById('mesh-timer-scale').value = d.timerScale; }
+                if (d.timerRadius) { inner.style.borderRadius = `${d.timerRadius}px`; note.style.borderRadius = `${Math.max(4, d.timerRadius-10)}px`; document.getElementById('mesh-timer-radius').value = d.timerRadius; }
+                if (d.timerGlass) { inner.style.backdropFilter = `blur(${d.timerGlass}px)`; document.getElementById('mesh-timer-glass').value = d.timerGlass; }
+            });
+            
+            document.getElementById('mesh-timer-scale').oninput = (e) => {
+                inner.style.transform = `scale(${e.target.value})`;
+                chrome.storage.local.set({timerScale: e.target.value});
+            };
+            document.getElementById('mesh-timer-radius').oninput = (e) => {
+                inner.style.borderRadius = `${e.target.value}px`;
+                note.style.borderRadius = `${Math.max(4, e.target.value-10)}px`;
+                chrome.storage.local.set({timerRadius: e.target.value});
+            };
+            document.getElementById('mesh-timer-glass').oninput = (e) => {
+                inner.style.backdropFilter = `blur(${e.target.value}px)`;
+                chrome.storage.local.set({timerGlass: e.target.value});
+            };
+        }, 100);
+
         document.body.appendChild(card);
         if (!isEnabled) card.style.display = 'none';
 

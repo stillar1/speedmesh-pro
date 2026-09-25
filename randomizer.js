@@ -85,12 +85,64 @@
                     lastTargetCells = [];
                 }
 
-                const winnerCell = allNameCells[Math.floor(Math.random() * allNameCells.length)];
+                // УМНАЯ ЛОГИКА ОЦЕНКИ
+                let candidates = [];
+                let hasSmartMatch = false;
+
+                allNameCells.forEach(cell => {
+                    let weight = 10;
+                    let row = cell.closest('tr');
+                    let isBorderline = false;
+                    let reason = "";
+
+                    if (row) {
+                        // 1. Ищем средний балл (наш кастомный атрибут или текст)
+                        let avgText = row.getAttribute('data-mesh-average') || "";
+                        if (!avgText) {
+                            let avgEl = row.querySelector('.mesh-sticky-avg');
+                            if (avgEl) avgText = avgEl.innerText;
+                        }
+                        
+                        if (avgText) {
+                            let avg = parseFloat(avgText.replace(',', '.'));
+                            // Если балл спорный (например, 2.5-2.65, 3.5-3.65, 4.5-4.65)
+                            if ((avg >= 2.50 && avg <= 2.65) || (avg >= 3.50 && avg <= 3.65) || (avg >= 4.50 && avg <= 4.65)) {
+                                weight += 50;
+                                isBorderline = true;
+                                reason = `Спорная оценка (${avgText})`;
+                                hasSmartMatch = true;
+                            }
+                        }
+
+                        // 2. Ищем пустые ячейки за последние 3-4 урока
+                        let cells = Array.from(row.querySelectorAll('td'));
+                        let recentEmpty = 0;
+                        for (let i = cells.length - 1; i >= Math.max(0, cells.length - 5); i--) {
+                            if (cells[i].innerText.trim() === '') recentEmpty++;
+                        }
+                        if (recentEmpty >= 3) {
+                            weight += 20;
+                            if (!reason) reason = "Мало оценок";
+                        }
+                    }
+
+                    candidates.push({ cell, weight, reason });
+                });
+
+                // Взвешенный рандом
+                let totalWeight = candidates.reduce((sum, c) => sum + c.weight, 0);
+                let rand = Math.random() * totalWeight;
+                let winner = candidates[0];
+                for (let c of candidates) {
+                    if (rand < c.weight) { winner = c; break; }
+                    rand -= c.weight;
+                }
+
+                const winnerCell = winner.cell;
                 winnerCell.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 
                 let row = winnerCell.closest('tr');
                 let rowKey = row ? row.getAttribute('data-row-key') : null;
-                
                 let targetRows = rowKey ? Array.from(document.querySelectorAll(`tr[data-row-key="${rowKey}"]`)) : [row];
 
                 targetRows.forEach(tr => {
@@ -103,13 +155,20 @@
                 
                 const nameText = winnerCell.innerText.replace(/^\d+\s+/, '').trim();
                 const textSpan = document.getElementById('mesh-randomizer-text');
-                if (textSpan) textSpan.innerHTML = `<span style="color: #e056fd;">🎯 ${nameText}</span>`;
+                
+                if (textSpan) {
+                    if (winner.reason) {
+                        textSpan.innerHTML = `<div style="display:flex; flex-direction:column; line-height:1.2;"><span style="color: #e056fd;">🎯 ${nameText}</span><span style="font-size:10px; color:#f39c12; font-weight:normal;">🧠 ${winner.reason}</span></div>`;
+                    } else {
+                        textSpan.innerHTML = `<span style="color: #e056fd;">🎯 ${nameText}</span>`;
+                    }
+                }
                 
                 clearTimeout(resetTimeout);
-                resetTimeout = setTimeout(() => { if(textSpan) textSpan.innerHTML = `<span>🎲</span> Кого спросить?`; }, 3000);
+                resetTimeout = setTimeout(() => { if(textSpan) textSpan.innerHTML = `<span>🎲</span> Кого спросить?`; }, winner.reason ? 4500 : 3000);
 
                 const currentCells = lastTargetCells;
-                removeClassTimeout = setTimeout(() => { currentCells.forEach(c => c.classList.remove('mesh-highlight-winner')); }, 4000);
+                removeClassTimeout = setTimeout(() => { currentCells.forEach(c => c.classList.remove('mesh-highlight-winner')); }, winner.reason ? 5000 : 4000);
 
             } else {
                 const textSpan = document.getElementById('mesh-randomizer-text');
