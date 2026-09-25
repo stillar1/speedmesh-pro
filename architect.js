@@ -127,9 +127,10 @@
 
         // Обработчик кнопки финального сохранения
         document.getElementById('mesh-arch-finish').onclick = () => {
-            if (confirm("Вы закончили настройку? Страница будет перезагружена.")) {
+            // Выключаем тумблер в настройках расширения и перезагружаем страницу
+            chrome.storage.sync.set({ architectMode: false }, () => {
                 window.location.reload();
-            }
+            });
         };
     }
 
